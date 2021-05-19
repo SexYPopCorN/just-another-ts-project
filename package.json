@@ -1,0 +1,15 @@
+{
+  "name": "just-another-ts-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "typescript": "4.3.0-beta"
+  },
+  "devDependencies": {},
+  "keywords": []
+}
