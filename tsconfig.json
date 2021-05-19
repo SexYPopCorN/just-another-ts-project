@@ -11,6 +11,12 @@
       "dom"
     ],
     "rootDir": "source",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "noImplicitAny": true
   }
 }
