@@ -2,6 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "module": "commonjs",
+    "target": "ES5",
     "jsx": "preserve",
     "esModuleInterop": true,
     "sourceMap": true,
