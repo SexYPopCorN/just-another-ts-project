@@ -1,6 +1,6 @@
-import { Handle } from './Handle';
+import { Unique } from '../Interface/Unique';
 
-export class HandleSet<Type extends Handle> {
+export class UniqueSet<Type extends Unique> {
   private keys: { [key: string]: number | undefined };
   private values: Type[];
 
@@ -9,7 +9,11 @@ export class HandleSet<Type extends Handle> {
     this.values = [];
   }
 
-  public add(value: Type): HandleSet<Type> {
+  public getValues(): readonly Type[] {
+    return this.values;
+  }
+
+  public add(value: Type): UniqueSet<Type> {
     if (this.keys[value.id] === void 0) {
       this.keys[value.id] = this.values.push(value) - 1;
     }
@@ -37,9 +41,5 @@ export class HandleSet<Type extends Handle> {
 
   public has(value: Type): boolean {
     return this.keys[value.id] !== void 0;
-  }
-
-  public getValues(): readonly Type[] {
-    return this.values;
   }
 }

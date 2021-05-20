@@ -45,9 +45,7 @@ export class BitSet {
   public isset(position: number): boolean {
     position |= 0;
     const index = position >>> BitSet.WORD_LENGTH_LOG;
-    return (
-      index < this.words.length && !!((this.words[index] >>> position) & 1)
-    );
+    return index < this.words.length && !!((this.words[index] >>> position) & 1);
   }
 
   public contains(set: BitSet): boolean {
