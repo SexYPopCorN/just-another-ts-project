@@ -1,6 +1,10 @@
 import { Entity } from './Entity';
 
-export interface ComponentConstructor<Type extends Component> extends Function {
+export interface ComponentConstructor<Type extends Component> {
+  readonly type: number;
+  readonly name: string;
+  readonly prototype: Type;
+
   new (...args: any[]): Type;
 }
 
@@ -29,17 +33,12 @@ export abstract class Component {
 
   public onRemove(entity: Entity): void {}
 
-  private static typeIdMap = new Map<ComponentConstructor<Component>, number>();
-  private static typeIdCounter = 0;
+  private static types: { [key: string]: number } = {};
 
-  public static getTypeId(
-    constructor: ComponentConstructor<Component>
-  ): number {
-    const typeId = Component.typeIdMap.get(constructor);
-    if (typeId !== void 0) {
-      return typeId;
-    }
-    Component.typeIdMap.set(constructor, Component.typeIdCounter);
-    return Component.typeIdCounter++;
+  public static getType(): number {
+    const index = Component.types[this.name];
+    return index === void 0
+      ? (Component.types[this.name] = Object.keys(Component.types).length)
+      : index;
   }
 }

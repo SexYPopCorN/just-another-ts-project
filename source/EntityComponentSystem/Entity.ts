@@ -4,63 +4,55 @@ import { Handle } from '../Handle';
 
 export class Entity extends Handle {
   private components: { [key: number]: Component | undefined };
-  private componentTypeIds: BitSet;
+  private componentTypes: BitSet;
 
   public constructor(id: number) {
     super(id);
 
     this.components = {};
-    this.componentTypeIds = new BitSet();
+    this.componentTypes = new BitSet();
   }
 
   public addComponent<Type extends Component, Args extends any[] = []>(
     constructor: ComponentConstructor<Type>,
     ...args: Args
   ): Entity {
-    const id = Component.getTypeId(constructor);
-    if (this.componentTypeIds.isset(id)) {
-      throw new Error(
-        `Entity::addComponent() Error: Entity already has [${constructor.name}] component.`
-      );
+    const type = constructor.type;
+    if (this.componentTypes.isset(type)) {
+      throw new Error(`Entity::addComponent() Error: Entity already has [${constructor.name}] component.`);
     }
     const component = new constructor(...args);
-    this.components[id] = component;
-    this.componentTypeIds.set(id);
+    this.components[type] = component;
+    this.componentTypes.set(type);
     component.setEntity(this).onAdd(this);
     return this;
   }
 
-  public getComponent<Type extends Component>(
-    constructor: ComponentConstructor<Type>
-  ): Type {
-    const id = Component.getTypeId(constructor);
-    if (!this.componentTypeIds.isset(id)) {
-      throw new Error(
-        `Entity::getComponent() Error: Entity does not have [${constructor.name}] component.`
-      );
+  public getComponent<Type extends Component>(constructor: ComponentConstructor<Type>): Type {
+    const type = constructor.type;
+    if (!this.componentTypes.isset(type)) {
+      throw new Error(`Entity::getComponent() Error: Entity does not have [${constructor.name}] component.`);
     }
-    return <Type>this.components[id];
+    return <Type>this.components[type];
   }
 
-  public removeComponent<Type extends Component>(
-    constructor: ComponentConstructor<Type>
-  ): Entity {
-    const id = Component.getTypeId(constructor);
-    if (!this.componentTypeIds.isset(id)) {
-      throw new Error(
-        `Entity::removeComponent() Error: Entity does not have [${constructor.name}] component.`
-      );
+  public removeComponent<Type extends Component>(constructor: ComponentConstructor<Type>): Entity {
+    const type = constructor.type;
+    if (!this.componentTypes.isset(type)) {
+      throw new Error(`Entity::removeComponent() Error: Entity does not have [${constructor.name}] component.`);
     }
-    const component = <Type>this.components[id];
-    this.components[id] = void 0;
-    this.componentTypeIds.unset(id);
+    const component = <Type>this.components[type];
+    this.components[type] = void 0;
+    this.componentTypes.unset(type);
     component.unsetEntity().onRemove(this);
     return this;
   }
 
-  public hasComponent<Type extends Component>(
-    constructor: ComponentConstructor<Type>
-  ): boolean {
-    return this.componentTypeIds.isset(Component.getTypeId(constructor));
+  public hasComponent<Type extends Component>(constructor: ComponentConstructor<Type>): boolean {
+    return this.componentTypes.isset(constructor.type);
+  }
+
+  public hasComponentTypes(types: BitSet): boolean {
+    return this.componentTypes.contains(types);
   }
 }

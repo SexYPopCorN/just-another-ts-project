@@ -4,6 +4,8 @@ import { Entity } from './EntityComponentSystem/Entity';
 class A extends Component {
   public x: number = 0;
   public y: number = 0;
+
+  public static type = A.getType();
 }
 
 class B extends Component {
@@ -16,6 +18,12 @@ class B extends Component {
   public onRemove(entity: Entity): void {
     console.log(`removed from entity ${entity.id}`);
   }
+
+  public static type = B.getType();
+  // public static getTypeId2(): number {
+  //   console.log(100);
+  //   return 100;
+  // }
 }
 
 class Foo extends Entity {
@@ -28,5 +36,6 @@ class Foo extends Entity {
 }
 
 const foo = new Foo(10);
-
+console.log(B.id);
+console.log(A.id);
 console.log(foo.getComponent(A), foo.getComponent(B));
