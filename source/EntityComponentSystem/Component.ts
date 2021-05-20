@@ -19,26 +19,21 @@ export abstract class Component {
     return this.entity;
   }
 
-  public setEntity(entity: Entity): Component {
+  public setEntity(entity: Entity): void {
     this.entity = entity;
-    return this;
   }
 
-  public unsetEntity(): Component {
+  public unsetEntity(): void {
     this.entity = null;
-    return this;
   }
 
-  public onAdd(entity: Entity): void {}
-
-  public onRemove(entity: Entity): void {}
+  public abstract onAdd?(entity: Entity): void;
+  public abstract onRemove?(entity: Entity): void;
 
   private static types: { [key: string]: number } = {};
 
   public static getType(): number {
     const index = Component.types[this.name];
-    return index === void 0
-      ? (Component.types[this.name] = Object.keys(Component.types).length)
-      : index;
+    return index === void 0 ? (Component.types[this.name] = Object.keys(Component.types).length) : index;
   }
 }

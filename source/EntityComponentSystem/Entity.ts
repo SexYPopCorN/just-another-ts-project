@@ -1,4 +1,4 @@
-import { BitSet } from '../BitSet';
+import { BitSet } from '../Container/BitSet';
 import { Component, ComponentConstructor } from './Component';
 import { Handle } from '../Handle';
 
@@ -24,7 +24,10 @@ export class Entity extends Handle {
     const component = new constructor(...args);
     this.components[type] = component;
     this.componentTypes.set(type);
-    component.setEntity(this).onAdd(this);
+    component.setEntity(this);
+    if (component.onAdd !== void 0) {
+      component.onAdd(this);
+    }
     return this;
   }
 
@@ -44,7 +47,10 @@ export class Entity extends Handle {
     const component = <Type>this.components[type];
     this.components[type] = void 0;
     this.componentTypes.unset(type);
-    component.unsetEntity().onRemove(this);
+    component.unsetEntity();
+    if (component.onRemove !== void 0) {
+      component.onRemove(this);
+    }
     return this;
   }
 
