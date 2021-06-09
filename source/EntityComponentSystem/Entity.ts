@@ -1,64 +1,29 @@
-import { BitSet } from '../Container/BitSet';
-import { Component, ComponentConstructor } from './Component';
-import { Handle } from '../Handle';
+import { BitSet } from './BitSet';
+import { ComponentType, Component } from './Component';
 
-export class Entity extends Handle {
-  private components: { [key: number]: Component | undefined };
+export class Entity {
+  private components: { [key: number]: Component };
   private componentTypes: BitSet;
 
-  public constructor(id: number) {
-    super(id);
-
+  public constructor() {
     this.components = {};
     this.componentTypes = new BitSet();
   }
 
-  public addComponent<Type extends Component, Args extends any[] = []>(
-    constructor: ComponentConstructor<Type>,
-    ...args: Args
-  ): Entity {
-    const type = constructor.type;
-    if (this.componentTypes.isset(type)) {
-      throw new Error(`Entity::addComponent() Error: Entity already has [${constructor.name}] component.`);
-    }
-    const component = new constructor(...args);
-    this.components[type] = component;
-    this.componentTypes.set(type);
-    component.setEntity(this);
-    if (component.onAdd !== void 0) {
-      component.onAdd(this);
-    }
-    return this;
+  public addComponent<Type extends ComponentType>(type: Type, ...args: ConstructorParameters<Type>): void {
+    const component = new type(...args);
   }
 
-  public getComponent<Type extends Component>(constructor: ComponentConstructor<Type>): Type {
-    const type = constructor.type;
-    if (!this.componentTypes.isset(type)) {
-      throw new Error(`Entity::getComponent() Error: Entity does not have [${constructor.name}] component.`);
-    }
-    return <Type>this.components[type];
-  }
-
-  public removeComponent<Type extends Component>(constructor: ComponentConstructor<Type>): Entity {
-    const type = constructor.type;
-    if (!this.componentTypes.isset(type)) {
-      throw new Error(`Entity::removeComponent() Error: Entity does not have [${constructor.name}] component.`);
-    }
-    const component = <Type>this.components[type];
-    this.components[type] = void 0;
-    this.componentTypes.unset(type);
-    component.unsetEntity();
-    if (component.onRemove !== void 0) {
-      component.onRemove(this);
-    }
-    return this;
-  }
-
-  public hasComponent<Type extends Component>(constructor: ComponentConstructor<Type>): boolean {
-    return this.componentTypes.isset(constructor.type);
-  }
-
-  public hasComponentTypes(types: BitSet): boolean {
-    return this.componentTypes.contains(types);
-  }
+  public removeComponent<Type extends ComponentType>(type: Type): void {}
 }
+class Foo extends Component {
+  constructor(x: number, y: string) {}
+  public x = 100;
+}
+class Bar extends Component {
+  public y = 100;
+  constructor(x: string, y: number) {}
+}
+
+const entity = new Entity();
+entity.addComponent<typeof Bar>(Bar, 1, 'sdas');

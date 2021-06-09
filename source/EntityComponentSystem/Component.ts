@@ -1,39 +1,41 @@
 import { Entity } from './Entity';
 
-export interface ComponentConstructor<Type extends Component> {
-  readonly type: number;
-  readonly name: string;
-  readonly prototype: Type;
-
-  new (...args: any[]): Type;
+export interface ComponentType<Type extends Component = Component> {
+  new (...args: any): Type;
+  getId(): number;
 }
 
 export abstract class Component {
-  private entity: Entity | null;
+  private owner: null | Entity;
 
   public constructor() {
-    this.entity = null;
+    this.owner = null;
   }
 
-  public getEntity(): Entity | null {
-    return this.entity;
+  public getOwner(): null | Entity {
+    return this.owner;
   }
 
-  public setEntity(entity: Entity): void {
-    this.entity = entity;
+  public setOwner(owner: Entity): void {
+    this.owner = owner;
   }
 
-  public unsetEntity(): void {
-    this.entity = null;
+  public unsetOwner(): void {
+    this.owner = null;
   }
 
-  public abstract onAdd?(entity: Entity): void;
-  public abstract onRemove?(entity: Entity): void;
-
-  private static types: { [key: string]: number } = {};
-
-  public static getType(): number {
-    const index = Component.types[this.name];
-    return index === void 0 ? (Component.types[this.name] = Object.keys(Component.types).length) : index;
-  }
+  public static getId = (() => {
+    let id = 0;
+    return function (this: any) {
+      if (this.id === void 0) {
+        Object.defineProperty(this, 'id', {
+          value: id++,
+          configurable: false,
+          enumerable: false,
+          writable: false
+        });
+      }
+      return this.id;
+    };
+  })();
 }
